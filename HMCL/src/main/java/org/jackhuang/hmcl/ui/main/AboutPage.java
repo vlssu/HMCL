@@ -32,6 +32,41 @@ import static org.jackhuang.hmcl.util.i18n.I18n.i18n;
 public class AboutPage extends StackPane {
 
     public AboutPage() {
+        ComponentList vlssu_about = new ComponentList();
+        {
+            IconedTwoLineListItem website = new IconedTwoLineListItem();
+            website.setImage(new Image("/assets/img/vlssu_logo.png", 32, 32, false, true));
+            website.setTitle(i18n("vlssu.about.website"));
+            website.setSubtitle(i18n("vlssu.about.website.statement"));
+            website.setExternalLink("https://vlssu.cn");
+
+            IconedTwoLineListItem docs = new IconedTwoLineListItem();
+            docs.setImage(new Image("/assets/img/vlssu_logo.png", 32, 32, false, true));
+            docs.setTitle(i18n("vlssu.about.docs"));
+            docs.setSubtitle(i18n("vlssu.about.docs.statement"));
+            docs.setExternalLink("https://docs.vlssu.cn");
+
+            IconedTwoLineListItem qq = new IconedTwoLineListItem();
+            qq.setImage(new Image("/assets/img/qq.png", 32, 32, false, true));
+            qq.setTitle(i18n("vlssu.about.community.qq"));
+            qq.setSubtitle(i18n("vlssu.about.community.qq.statement"));
+            qq.setExternalLink("https://jq.qq.com/?_wv=1027&k=5mq4JvN");
+
+            IconedTwoLineListItem kookapp = new IconedTwoLineListItem();
+            kookapp.setImage(new Image("/assets/img/kookapp.png", 32, 32, false, true));
+            kookapp.setTitle(i18n("vlssu.about.community.kookapp"));
+            kookapp.setSubtitle(i18n("vlssu.about.community.kookapp.statement"));
+            kookapp.setExternalLink("https://kook.top/Kx7n3t");
+
+            IconedTwoLineListItem author = new IconedTwoLineListItem();
+            author.setImage(new Image("/assets/img/valiant_shishu.png", 32, 32, false, true));
+            author.setTitle("飒爽师叔");
+            author.setSubtitle(i18n("vlssu.about.author.statement"));
+            author.setExternalLink("https://space.bilibili.com/22219285");
+
+            vlssu_about.getContent().setAll(website, docs, qq, kookapp, author);
+        }
+
         ComponentList about = new ComponentList();
         {
             IconedTwoLineListItem launcher = new IconedTwoLineListItem();
@@ -203,6 +238,9 @@ public class AboutPage extends StackPane {
         VBox content = new VBox(16);
         content.setPadding(new Insets(10));
         content.getChildren().setAll(
+                ComponentList.createComponentListTitle(i18n("vlssu.about")),
+                vlssu_about,
+
                 ComponentList.createComponentListTitle(i18n("about")),
                 about,
 
