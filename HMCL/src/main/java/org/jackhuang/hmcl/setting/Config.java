@@ -120,7 +120,7 @@ public final class Config implements Cloneable, Observable {
     private DoubleProperty height = new SimpleDoubleProperty();
 
     @SerializedName("theme")
-    private ObjectProperty<Theme> theme = new SimpleObjectProperty<>(Theme.BLUE);
+    private ObjectProperty<Theme> theme = new SimpleObjectProperty<>(Theme.GREY);
 
     @SerializedName("localization")
     private ObjectProperty<SupportedLocale> localization = new SimpleObjectProperty<>(Locales.DEFAULT);
@@ -159,7 +159,7 @@ public final class Config implements Cloneable, Observable {
     private IntegerProperty logLines = new SimpleIntegerProperty(100);
 
     @SerializedName("titleTransparent")
-    private BooleanProperty titleTransparent = new SimpleBooleanProperty(false);
+    private BooleanProperty titleTransparent = new SimpleBooleanProperty(true);
 
     @SerializedName("authlibInjectorServers")
     private ObservableList<AuthlibInjectorServer> authlibInjectorServers = FXCollections.observableArrayList(server -> new Observable[] { server });

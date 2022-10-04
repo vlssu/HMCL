@@ -39,7 +39,7 @@ import static org.jackhuang.hmcl.setting.ConfigHolder.config;
 
 @JsonAdapter(Theme.TypeAdapter.class)
 public class Theme {
-    public static final Theme BLUE = new Theme("blue", "#5C6BC0");
+    public static final Theme GREY = new Theme("grey", "#616161");
     public static final Color BLACK = Color.web("#292929");
     public static final Color[] SUGGESTED_COLORS = new Color[]{
             Color.web("#3D6DA3"), // blue
@@ -47,7 +47,8 @@ public class Theme {
             Color.web("#43A047"), // green
             Color.web("#E67E22"), // orange
             Color.web("#9C27B0"), // purple
-            Color.web("#B71C1C")  // red
+            Color.web("#B71C1C"),  // red
+            Color.web("#616161")  // grey
     };
 
     private final Color paint;
@@ -100,8 +101,8 @@ public class Theme {
             temp.deleteOnExit();
             css = temp.toURI().toString();
         } catch (IOException | NullPointerException e) {
-            Logging.LOG.log(Level.SEVERE, "Unable to create theme stylesheet. Fallback to blue theme.", e);
-            css = "/assets/css/blue.css";
+            Logging.LOG.log(Level.SEVERE, "Unable to create theme stylesheet. Fallback to grey theme.", e);
+            css = "/assets/css/grey.css";
         }
 
         return new String[]{
@@ -131,6 +132,8 @@ public class Theme {
             return Optional.of(custom("#9C27B0"));
         else if (name.equalsIgnoreCase("red"))
             return Optional.of(custom("#F44336"));
+        else if (name.equalsIgnoreCase("grey"))
+            return Optional.of(custom("#616161"));
 
         if (name.startsWith("#"))
             try {
@@ -167,7 +170,7 @@ public class Theme {
 
         @Override
         public Theme read(JsonReader in) throws IOException {
-            return getTheme(in.nextString()).orElse(Theme.BLUE);
+            return getTheme(in.nextString()).orElse(Theme.GREY);
         }
     }
 }
