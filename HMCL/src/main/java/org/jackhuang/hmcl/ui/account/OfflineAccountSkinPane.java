@@ -111,7 +111,7 @@ public class OfflineAccountSkinPane extends StackPane {
                 new MultiFileItem.Option<>("Steve", Skin.Type.STEVE),
                 new MultiFileItem.Option<>("Alex", Skin.Type.ALEX),
                 new MultiFileItem.Option<>(i18n("account.skin.type.local_file"), Skin.Type.LOCAL_FILE),
-                new MultiFileItem.Option<>("LittleSkin", Skin.Type.LITTLE_SKIN),
+                new MultiFileItem.Option<>("VlssuSkin", Skin.Type.VLSSU_SKIN),
                 new MultiFileItem.Option<>(i18n("account.skin.type.csl_api"), Skin.Type.CUSTOM_SKIN_LOADER_API)
         ));
 
@@ -160,9 +160,9 @@ public class OfflineAccountSkinPane extends StackPane {
                 case STEVE:
                 case ALEX:
                     break;
-                case LITTLE_SKIN:
+                case VLSSU_SKIN:
                     HintPane hint = new HintPane(MessageDialogPane.MessageType.INFO);
-                    hint.setText(i18n("account.skin.type.little_skin.hint"));
+                    hint.setText(i18n("account.skin.type.vlssu_skin.hint"));
                     gridPane.addRow(0, hint);
                     break;
                 case LOCAL_FILE:
@@ -185,14 +185,14 @@ public class OfflineAccountSkinPane extends StackPane {
             fireEvent(new DialogCloseEvent());
         });
 
-        JFXHyperlink littleSkinLink = new JFXHyperlink(i18n("account.skin.type.little_skin"));
-        littleSkinLink.setOnAction(e -> FXUtils.openLink("https://littleskin.cn/"));
+        JFXHyperlink vlssuSkinLink = new JFXHyperlink(i18n("account.skin.type.vlssu_skin"));
+        vlssuSkinLink.setOnAction(e -> FXUtils.openLink("https://skin.vlssu.com/"));
         JFXButton cancelButton = new JFXButton(i18n("button.cancel"));
         cancelButton.getStyleClass().add("dialog-cancel");
         cancelButton.setOnAction(e -> fireEvent(new DialogCloseEvent()));
         onEscPressed(this, cancelButton::fire);
 
-        layout.setActions(littleSkinLink, acceptButton, cancelButton);
+        layout.setActions(vlssuSkinLink, acceptButton, cancelButton);
     }
 
     private Skin getSkin() {

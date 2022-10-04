@@ -122,13 +122,13 @@ public class AccountListPage extends DecoratorAnimatedPage implements DecoratorP
                     microsoftItem.setOnAction(e -> Controllers.dialog(new CreateAccountPane(Accounts.FACTORY_MICROSOFT)));
                     boxMethods.getChildren().add(microsoftItem);
 
-                    AdvancedListItem littleSkinItem = new AdvancedListItem();
-                    littleSkinItem.getStyleClass().add("navigation-drawer-item");
-                    littleSkinItem.setActionButtonVisible(false);
-                    littleSkinItem.setTitle(i18n("account.methods.little_skin"));
-                    littleSkinItem.setLeftGraphic(wrap(SVG::server));
-                    littleSkinItem.setOnAction(e -> Controllers.dialog(new CreateAccountPane(Accounts.FACTORY_LITTLE_SKIN)));
-                    boxMethods.getChildren().add(littleSkinItem);
+                    AdvancedListItem vlssuSkinItem = new AdvancedListItem();
+                    vlssuSkinItem.getStyleClass().add("navigation-drawer-item");
+                    vlssuSkinItem.setActionButtonVisible(false);
+                    vlssuSkinItem.setTitle(i18n("account.methods.vlssu_skin"));
+                    vlssuSkinItem.setLeftGraphic(wrap(SVG::server));
+                    vlssuSkinItem.setOnAction(e -> Controllers.dialog(new CreateAccountPane(Accounts.FACTORY_VLSSU_SKIN)));
+                    boxMethods.getChildren().add(vlssuSkinItem);
 
                     VBox boxAuthServers = new VBox();
                     authServerItems = MappedObservableList.create(skinnable.authServersProperty(), server -> {

@@ -51,7 +51,7 @@ public class Skin {
         STEVE,
         ALEX,
         LOCAL_FILE,
-        LITTLE_SKIN,
+        VLSSU_SKIN,
         CUSTOM_SKIN_LOADER_API,
         YGGDRASIL_API;
 
@@ -65,8 +65,8 @@ public class Skin {
                     return ALEX;
                 case "local_file":
                     return LOCAL_FILE;
-                case "little_skin":
-                    return LITTLE_SKIN;
+                case "vlssu_skin":
+                    return VLSSU_SKIN;
                 case "custom_skin_loader_api":
                     return CUSTOM_SKIN_LOADER_API;
                 case "yggdrasil_api":
@@ -128,9 +128,9 @@ public class Skin {
                     if (capePath.isPresent()) cape = Texture.loadTexture(Files.newInputStream(capePath.get()));
                     return new LoadedSkin(getTextureModel(), skin, cape);
                 });
-            case LITTLE_SKIN:
+            case VLSSU_SKIN:
             case CUSTOM_SKIN_LOADER_API:
-                String realCslApi = type == Type.LITTLE_SKIN ? "https://littleskin.cn" : StringUtils.removeSuffix(cslApi, "/");
+                String realCslApi = type == Type.VLSSU_SKIN ? "https://skin.vlssu.com" : StringUtils.removeSuffix(cslApi, "/");
                 return Task.composeAsync(() -> new GetTask(new URL(String.format("%s/%s.json", realCslApi, username))))
                         .thenComposeAsync(json -> {
                             SkinJson result = JsonUtils.GSON.fromJson(json, SkinJson.class);
