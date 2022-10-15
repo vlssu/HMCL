@@ -28,8 +28,8 @@ import java.nio.file.Path;
 public final class Metadata {
     private Metadata() {}
 
-    public static final String NAME = "HMCL";
-    public static final String FULL_NAME = "Hello Minecraft! Launcher";
+    public static final String NAME = "VMCL";
+    public static final String FULL_NAME = "Vlssu Minecraft! Launcher";
     public static final String VERSION = System.getProperty("hmcl.version.override", JarUtils.thisJar().flatMap(JarUtils::getImplementationVersion).orElse("@develop@"));
 
     public static final String TITLE = NAME + " " + VERSION;
