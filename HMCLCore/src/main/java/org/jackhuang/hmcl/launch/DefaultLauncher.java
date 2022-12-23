@@ -21,7 +21,6 @@ import org.jackhuang.hmcl.auth.AuthInfo;
 import org.jackhuang.hmcl.download.LibraryAnalyzer;
 import org.jackhuang.hmcl.game.*;
 import org.jackhuang.hmcl.util.Lang;
-import org.jackhuang.hmcl.util.Log4jLevel;
 import org.jackhuang.hmcl.util.StringUtils;
 import org.jackhuang.hmcl.util.gson.UUIDTypeAdapter;
 import org.jackhuang.hmcl.util.io.FileUtils;
@@ -106,35 +105,61 @@ public class DefaultLauncher extends Launcher {
 
         res.add(options.getJava().getBinary().toString());
 
-        res.addAllWithoutParsing(options.getJavaArguments());
+        // Fix RCE vulnerability of log4j2
+        res.addDefault("-Djava.rmi.server.useCodebaseOnly=", "true");
+        res.addDefault("-Dcom.sun.jndi.rmi.object.trustURLCodebase=", "false");
+        res.addDefault("-Dcom.sun.jndi.cosnaming.object.trustURLCodebase=", "false");
+
+        String formatMsgNoLookups = res.addDefault("-Dlog4j2.formatMsgNoLookups=", "true");
+        if (!"-Dlog4j2.formatMsgNoLookups=false".equals(formatMsgNoLookups) && isUsingLog4j()) {
+            res.addDefault("-Dlog4j.configurationFile=", getLog4jConfigurationFile().getAbsolutePath());
+        }
+
+        Proxy proxy = options.getProxy();
+        if (proxy != null && StringUtils.isBlank(options.getProxyUser()) && StringUtils.isBlank(options.getProxyPass())) {
+            InetSocketAddress address = (InetSocketAddress) options.getProxy().address();
+            if (address != null) {
+                String host = address.getHostString();
+                int port = address.getPort();
+                if (proxy.type() == Proxy.Type.HTTP) {
+                    res.addDefault("-Dhttp.proxyHost=", host);
+                    res.addDefault("-Dhttp.proxyPort=", String.valueOf(port));
+                    res.addDefault("-Dhttps.proxyHost=", host);
+                    res.addDefault("-Dhttps.proxyPort=", String.valueOf(port));
+                } else if (proxy.type() == Proxy.Type.SOCKS) {
+                    res.addDefault("-DsocksProxyHost=", host);
+                    res.addDefault("-DsocksProxyPort=", String.valueOf(port));
+                }
+            }
+        }
+
+        if (options.getMaxMemory() != null && options.getMaxMemory() > 0)
+            res.addDefault("-Xmx", options.getMaxMemory() + "m");
+
+        if (options.getMinMemory() != null && options.getMinMemory() > 0)
+            res.addDefault("-Xms", options.getMinMemory() + "m");
+
+        if (options.getMetaspace() != null && options.getMetaspace() > 0)
+            if (options.getJava().getParsedVersion() < JavaVersion.JAVA_8)
+                res.addDefault("-XX:PermSize=", options.getMetaspace() + "m");
+            else
+                res.addDefault("-XX:MetaspaceSize=", options.getMetaspace() + "m");
+
+        res.addAllDefaultWithoutParsing(options.getJavaArguments());
 
         Charset encoding = OperatingSystem.NATIVE_CHARSET;
-        if (options.getJava().getParsedVersion() < JavaVersion.JAVA_8) {
+        String fileEncoding = res.addDefault("-Dfile.encoding=", encoding.name());
+        if (fileEncoding != null && !"-Dfile.encoding=COMPAT".equals(fileEncoding)) {
             try {
-                String fileEncoding = res.addDefault("-Dfile.encoding=", encoding.name());
-                if (fileEncoding != null)
-                    encoding = Charset.forName(fileEncoding.substring("-Dfile.encoding=".length()));
+                encoding = Charset.forName(fileEncoding.substring("-Dfile.encoding=".length()));
             } catch (Throwable ex) {
                 LOG.log(Level.WARNING, "Bad file encoding", ex);
             }
-        } else {
-            if (options.getJava().getParsedVersion() > JavaVersion.JAVA_17
-                    && VersionNumber.VERSION_COMPARATOR.compare(repository.getGameVersion(version).orElse("1.13"), "1.13") < 0) {
-                res.addDefault("-Dfile.encoding=", "COMPAT");
-            }
-
-            try {
-                String stdoutEncoding = res.addDefault("-Dsun.stdout.encoding=", encoding.name());
-                if (stdoutEncoding != null)
-                    encoding = Charset.forName(stdoutEncoding.substring("-Dsun.stdout.encoding=".length()));
-            } catch (Throwable ex) {
-                LOG.log(Level.WARNING, "Bad stdout encoding", ex);
-            }
-
-            res.addDefault("-Dsun.stderr.encoding=", encoding.name());
         }
+        res.addDefault("-Dsun.stdout.encoding=", encoding.name());
+        res.addDefault("-Dsun.stderr.encoding=", encoding.name());
 
-        // JVM Args
+        // Default JVM Args
         if (!options.isNoGeneratedJVMArgs()) {
             appendJvmArgs(res);
 
@@ -166,20 +191,13 @@ public class DefaultLauncher extends Launcher {
                     res.addUnstableDefault("G1NewSizePercent", "20");
                     res.addUnstableDefault("G1ReservePercent", "20");
                     res.addUnstableDefault("MaxGCPauseMillis", "50");
-                    res.addUnstableDefault("G1HeapRegionSize", "16m");
+                    res.addUnstableDefault("G1HeapRegionSize", "32m");
                 }
             }
-
-            if (options.getMetaspace() != null && options.getMetaspace() > 0)
-                if (options.getJava().getParsedVersion() < JavaVersion.JAVA_8)
-                    res.addDefault("-XX:PermSize=", options.getMetaspace() + "m");
-                else
-                    res.addDefault("-XX:MetaspaceSize=", options.getMetaspace() + "m");
 
             res.addUnstableDefault("UseAdaptiveSizePolicy", false);
             res.addUnstableDefault("OmitStackTraceInFastThrow", false);
             res.addUnstableDefault("DontCompileHugeMethods", false);
-            res.addDefault("-Xmn", "128m");
 
             // As 32-bit JVM allocate 320KB for stack by default rather than 64-bit version allocating 1MB,
             // causing Minecraft 1.13 crashed accounting for java.lang.StackOverflowError.
@@ -187,45 +205,11 @@ public class DefaultLauncher extends Launcher {
                 res.addDefault("-Xss", "1m");
             }
 
-            if (options.getMaxMemory() != null && options.getMaxMemory() > 0)
-                res.addDefault("-Xmx", options.getMaxMemory() + "m");
-
-            if (options.getMinMemory() != null && options.getMinMemory() > 0)
-                res.addDefault("-Xms", options.getMinMemory() + "m");
-
             if (options.getJava().getParsedVersion() == JavaVersion.JAVA_16)
                 res.addDefault("--illegal-access=", "permit");
 
             res.addDefault("-Dfml.ignoreInvalidMinecraftCertificates=", "true");
             res.addDefault("-Dfml.ignorePatchDiscrepancies=", "true");
-        }
-
-        // Fix RCE vulnerability of log4j2
-        res.addDefault("-Djava.rmi.server.useCodebaseOnly=", "true");
-        res.addDefault("-Dcom.sun.jndi.rmi.object.trustURLCodebase=", "false");
-        res.addDefault("-Dcom.sun.jndi.cosnaming.object.trustURLCodebase=", "false");
-
-        String formatMsgNoLookups = res.addDefault("-Dlog4j2.formatMsgNoLookups=", "true");
-        if (!"-Dlog4j2.formatMsgNoLookups=false".equals(formatMsgNoLookups) && isUsingLog4j()) {
-            res.addDefault("-Dlog4j.configurationFile=", getLog4jConfigurationFile().getAbsolutePath());
-        }
-
-        Proxy proxy = options.getProxy();
-        if (proxy != null && StringUtils.isBlank(options.getProxyUser()) && StringUtils.isBlank(options.getProxyPass())) {
-            InetSocketAddress address = (InetSocketAddress) options.getProxy().address();
-            if (address != null) {
-                String host = address.getHostString();
-                int port = address.getPort();
-                if (proxy.type() == Proxy.Type.HTTP) {
-                    res.addDefault("-Dhttp.proxyHost=", host);
-                    res.addDefault("-Dhttp.proxyPort=", String.valueOf(port));
-                    res.addDefault("-Dhttps.proxyHost=", host);
-                    res.addDefault("-Dhttps.proxyPort=", String.valueOf(port));
-                } else if (proxy.type() == Proxy.Type.SOCKS) {
-                    res.addDefault("-DsocksProxyHost=", host);
-                    res.addDefault("-DsocksProxyPort=", String.valueOf(port));
-                }
-            }
         }
 
         List<String> classpath = repository.getClasspath(version);
@@ -401,7 +385,7 @@ public class DefaultLauncher extends Launcher {
                 pair("${profile_name}", Optional.ofNullable(options.getProfileName()).orElse("Minecraft")),
                 pair("${version_type}", Optional.ofNullable(options.getVersionType()).orElse(version.getType().getId())),
                 pair("${game_directory}", repository.getRunDirectory(version.getId()).getAbsolutePath()),
-                pair("${user_type}", "mojang"),
+                pair("${user_type}", authInfo.getUserType()),
                 pair("${assets_index_name}", version.getAssetIndex().getId()),
                 pair("${user_properties}", authInfo.getUserProperties()),
                 pair("${resolution_width}", options.getWidth().toString()),
@@ -646,15 +630,15 @@ public class DefaultLauncher extends Launcher {
             throw new ExecutionPolicyLimitException();
     }
 
-    private void startMonitors(ManagedProcess managedProcess, ProcessListener processListener, Charset encoding, boolean isDaemon) {
+    private static void startMonitors(ManagedProcess managedProcess, ProcessListener processListener, Charset encoding, boolean isDaemon) {
         processListener.setProcess(managedProcess);
         Thread stdout = Lang.thread(new StreamPump(managedProcess.getProcess().getInputStream(), it -> {
-            processListener.onLog(it, Optional.ofNullable(Log4jLevel.guessLevel(it)).orElse(Log4jLevel.INFO));
+            processListener.onLog(it, false);
             managedProcess.addLine(it);
         }, encoding), "stdout-pump", isDaemon);
         managedProcess.addRelatedThread(stdout);
         Thread stderr = Lang.thread(new StreamPump(managedProcess.getProcess().getErrorStream(), it -> {
-            processListener.onLog(it, Log4jLevel.ERROR);
+            processListener.onLog(it, true);
             managedProcess.addLine(it);
         }, encoding), "stderr-pump", isDaemon);
         managedProcess.addRelatedThread(stderr);

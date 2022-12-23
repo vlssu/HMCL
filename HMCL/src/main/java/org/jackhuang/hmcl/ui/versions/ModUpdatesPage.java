@@ -27,6 +27,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jackhuang.hmcl.mod.LocalModFile;
 import org.jackhuang.hmcl.mod.ModManager;
 import org.jackhuang.hmcl.mod.RemoteMod;
@@ -158,8 +159,8 @@ public class ModUpdatesPage extends BorderPane implements DecoratorPage {
     public static class ModUpdateCell extends MDListCell<LocalModFile.ModUpdate> {
         TwoLineListItem content = new TwoLineListItem();
 
-        public ModUpdateCell(JFXListView<LocalModFile.ModUpdate> listView) {
-            super(listView);
+        public ModUpdateCell(JFXListView<LocalModFile.ModUpdate> listView, MutableObject<Object> lastCell) {
+            super(listView, lastCell);
 
             getContainer().getChildren().setAll(content);
         }
@@ -276,9 +277,7 @@ public class ModUpdatesPage extends BorderPane implements DecoratorPage {
             dependents = mods.stream()
                     .map(mod -> {
                         return Task
-                                .runAsync(Schedulers.javafx(), () -> {
-                                    mod.getKey().setOld(true);
-                                })
+                                .runAsync(Schedulers.javafx(), () -> mod.getKey().setOld(true))
                                 .thenComposeAsync(() -> {
                                     FileDownloadTask task = new FileDownloadTask(
                                             new URL(mod.getValue().getFile().getUrl()),
@@ -325,6 +324,8 @@ public class ModUpdatesPage extends BorderPane implements DecoratorPage {
 
         @Override
         public void execute() throws Exception {
+            if (!isDependentsSucceeded())
+                throw getException();
         }
     }
 }

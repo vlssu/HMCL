@@ -35,6 +35,7 @@ import org.jackhuang.hmcl.game.ModpackHelper;
 import org.jackhuang.hmcl.setting.Accounts;
 import org.jackhuang.hmcl.setting.EnumCommonDirectory;
 import org.jackhuang.hmcl.setting.Profiles;
+import org.jackhuang.hmcl.setting.Theme;
 import org.jackhuang.hmcl.task.Task;
 import org.jackhuang.hmcl.task.TaskExecutor;
 import org.jackhuang.hmcl.ui.account.AccountListPage;
@@ -45,7 +46,6 @@ import org.jackhuang.hmcl.ui.download.DownloadPage;
 import org.jackhuang.hmcl.ui.download.ModpackInstallWizardProvider;
 import org.jackhuang.hmcl.ui.main.LauncherSettingsPage;
 import org.jackhuang.hmcl.ui.main.RootPage;
-import org.jackhuang.hmcl.ui.multiplayer.MultiplayerPage;
 import org.jackhuang.hmcl.ui.versions.GameListPage;
 import org.jackhuang.hmcl.ui.versions.VersionPage;
 import org.jackhuang.hmcl.util.FutureCallback;
@@ -93,7 +93,6 @@ public final class Controllers {
         accountListPage.authServersProperty().bindContentBidirectional(config().getAuthlibInjectorServers());
         return accountListPage;
     });
-    private static Lazy<MultiplayerPage> multiplayerPage = new Lazy<>(MultiplayerPage::new);
     private static Lazy<LauncherSettingsPage> settingsPage = new Lazy<>(LauncherSettingsPage::new);
 
     private Controllers() {
@@ -123,11 +122,6 @@ public final class Controllers {
     }
 
     // FXThread
-    public static MultiplayerPage getMultiplayerPage() {
-        return multiplayerPage.get();
-    }
-
-    // FXThread
     public static LauncherSettingsPage getSettingsPage() {
         return settingsPage.get();
     }
@@ -148,10 +142,16 @@ public final class Controllers {
     }
 
     public static void onApplicationStop() {
-        config().setHeight(stageHeight.get());
-        config().setWidth(stageWidth.get());
-        stageHeight = null;
-        stageWidth = null;
+        if (stageHeight != null) {
+            config().setHeight(stageHeight.get());
+            stageHeight.unbind();
+            stageHeight = null;
+        }
+        if (stageWidth != null) {
+            config().setWidth(stageWidth.get());
+            stageWidth.unbind();
+            stageWidth = null;
+        }
     }
 
     public static void initialize(Stage stage) {
@@ -182,7 +182,7 @@ public final class Controllers {
         stage.setMinWidth(800 + 2 + 16); // bg width + border width*2 + shadow width*2
         decorator.getDecorator().prefWidthProperty().bind(scene.widthProperty());
         decorator.getDecorator().prefHeightProperty().bind(scene.heightProperty());
-        scene.getStylesheets().setAll(config().getTheme().getStylesheets(config().getLauncherFontFamily()));
+        scene.getStylesheets().setAll(Theme.getTheme().getStylesheets(config().getLauncherFontFamily()));
 
         stage.getIcons().add(newImage("/assets/img/icon.png"));
         stage.setTitle(Metadata.FULL_TITLE);
@@ -322,9 +322,12 @@ public final class Controllers {
         rootPage = null;
         versionPage = null;
         gameListPage = null;
+        downloadPage = null;
+        accountListPage = null;
         settingsPage = null;
         decorator = null;
         stage = null;
         scene = null;
+        onApplicationStop();
     }
 }

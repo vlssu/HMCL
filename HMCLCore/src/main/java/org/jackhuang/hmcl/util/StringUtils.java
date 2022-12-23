@@ -216,7 +216,10 @@ public final class StringUtils {
     }
 
     public static String parseColorEscapes(String original) {
-        return original.replaceAll("\u00A7\\d", "");
+        if (original.indexOf('\u00A7') < 0)
+            return original;
+
+        return original.replaceAll("\u00A7[0-9a-gklmnor]", "");
     }
 
     public static String parseEscapeSequence(String str) {
@@ -258,6 +261,16 @@ public final class StringUtils {
 
     public static boolean isASCII(CharSequence cs) {
         return US_ASCII_ENCODER.canEncode(cs);
+    }
+
+    public static boolean isAlphabeticOrNumber(String str) {
+        int length = str.length();
+        for (int i = 0; i < length; i++) {
+            char ch = str.charAt(i);
+            if (!(ch >= '0' && ch <= '9') && !(ch >= 'a' && ch <= 'z') && !(ch >= 'A' && ch <= 'Z'))
+                return false;
+        }
+        return true;
     }
 
     /**

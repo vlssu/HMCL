@@ -67,6 +67,10 @@ public class OfflineAccount extends Account {
         }
     }
 
+    public AuthlibInjectorArtifactProvider getDownloader() {
+        return downloader;
+    }
+
     @Override
     public UUID getUUID() {
         return uuid;
@@ -91,7 +95,7 @@ public class OfflineAccount extends Account {
         invalidate();
     }
 
-    private boolean loadAuthlibInjector(Skin skin) {
+    protected boolean loadAuthlibInjector(Skin skin) {
         if (skin == null) return false;
         if (skin.getType() == Skin.Type.DEFAULT) return false;
         TextureModel defaultModel = TextureModel.detectUUID(getUUID());
@@ -104,7 +108,8 @@ public class OfflineAccount extends Account {
 
     @Override
     public AuthInfo logIn() throws AuthenticationException {
-        AuthInfo authInfo = new AuthInfo(username, uuid, UUIDTypeAdapter.fromUUID(UUID.randomUUID()), "{}");
+        // Using "legacy" user type here because "mojang" user type may cause "invalid session token" or "disconnected" when connecting to a game server.
+        AuthInfo authInfo = new AuthInfo(username, uuid, UUIDTypeAdapter.fromUUID(UUID.randomUUID()), AuthInfo.USER_TYPE_LEGACY, "{}");
 
         if (loadAuthlibInjector(skin)) {
             CompletableFuture<AuthlibInjectorArtifactInfo> artifactTask = CompletableFuture.supplyAsync(() -> {
@@ -144,7 +149,7 @@ public class OfflineAccount extends Account {
         private YggdrasilServer server;
 
         public OfflineAuthInfo(AuthInfo authInfo, AuthlibInjectorArtifactInfo artifact) {
-            super(authInfo.getUsername(), authInfo.getUUID(), authInfo.getAccessToken(), authInfo.getUserProperties());
+            super(authInfo.getUsername(), authInfo.getUUID(), authInfo.getAccessToken(), USER_TYPE_LEGACY, authInfo.getUserProperties());
 
             this.artifact = artifact;
         }
@@ -157,7 +162,8 @@ public class OfflineAccount extends Account {
             server.start();
 
             try {
-                server.addCharacter(new YggdrasilServer.Character(uuid, username, skin.load(username).run()));
+                server.addCharacter(new YggdrasilServer.Character(uuid, username,
+                        skin != null ? skin.load(username).run() : null));
             } catch (IOException e) {
                 // ignore
             } catch (Exception e) {

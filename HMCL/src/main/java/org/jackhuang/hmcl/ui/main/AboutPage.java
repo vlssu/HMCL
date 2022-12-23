@@ -127,19 +127,13 @@ public class AboutPage extends StackPane {
             mcmod.setSubtitle(i18n("about.thanks_to.mcmod.statement"));
             mcmod.setExternalLink("https://www.mcmod.cn/");
 
-            IconedTwoLineListItem noin = new IconedTwoLineListItem();
-            noin.setImage(new Image("/assets/img/noin.png", 32, 32, false, true));
-            noin.setTitle(i18n("about.thanks_to.noin"));
-            noin.setSubtitle(i18n("about.thanks_to.noin.statement"));
-            noin.setExternalLink("https://mcer.cn/cato");
-
             IconedTwoLineListItem contributors = new IconedTwoLineListItem();
             contributors.setImage(new Image("/assets/img/github.png", 32, 32, false, true));
             contributors.setTitle(i18n("about.thanks_to.contributors"));
             contributors.setSubtitle(i18n("about.thanks_to.contributors.statement"));
             contributors.setExternalLink("https://github.com/huanghongxun/HMCL/graphs/contributors");
 
-            thanks.getContent().setAll(yushijinhun, bangbang93, glavo, mcbbs, mcmod, noin, gamerteam, redLnn, contributors);
+            thanks.getContent().setAll(yushijinhun, bangbang93, glavo, mcbbs, mcmod, gamerteam, redLnn, contributors);
         }
 
         ComponentList community = new ComponentList();
@@ -149,6 +143,12 @@ public class AboutPage extends StackPane {
             users.setTitle(i18n("about.thanks_to.users"));
             users.setSubtitle(i18n("about.thanks_to.users.statement"));
             users.setExternalLink("https://hmcl.huangyuhui.net/api/redirect/sponsor");
+
+            IconedTwoLineListItem qq = new IconedTwoLineListItem();
+//            qq.setImage(new Image("/assets/img/qq.png", 32, 32, false, true));
+            qq.setTitle(i18n("about.community.qqchannel"));
+            qq.setSubtitle(i18n("about.community.qqchannel.statement"));
+            qq.setExternalLink("https://pd.qq.com/s/qor74cm6");
 
             IconedTwoLineListItem discord = new IconedTwoLineListItem();
             discord.setImage(new Image("/assets/img/discord.png", 32, 32, false, true));
@@ -162,24 +162,24 @@ public class AboutPage extends StackPane {
             kookapp.setSubtitle(i18n("about.community.kookapp.statement"));
             kookapp.setExternalLink("https://kook.top/Kx7n3t");
 
-            community.getContent().setAll(users, discord, kookapp);
+            community.getContent().setAll(users, qq, discord, kookapp);
         }
 
         ComponentList dep = new ComponentList();
         {
             IconedTwoLineListItem javafx = new IconedTwoLineListItem();
             javafx.setTitle("JavaFX");
-            javafx.setSubtitle("Copyright (c) 2013, 2021, Oracle and/or its affiliates.\nLicensed under the GPL 2 with Classpath Exception.");
+            javafx.setSubtitle("Copyright © 2013, 2021, Oracle and/or its affiliates.\nLicensed under the GPL 2 with Classpath Exception.");
             javafx.setExternalLink("https://openjfx.io/");
 
             IconedTwoLineListItem jfoenix = new IconedTwoLineListItem();
             jfoenix.setTitle("JFoenix");
-            jfoenix.setSubtitle("Copyright (c) 2016 JFoenix.\nLicensed under the MIT License.");
+            jfoenix.setSubtitle("Copyright © 2016 JFoenix.\nLicensed under the MIT License.");
             jfoenix.setExternalLink("http://www.jfoenix.com/");
 
             IconedTwoLineListItem gson = new IconedTwoLineListItem();
             gson.setTitle("Gson");
-            gson.setSubtitle("Copyright 2008 Google Inc.\nLicensed under the Apache 2.0 License.");
+            gson.setSubtitle("Copyright © 2008 Google Inc.\nLicensed under the Apache 2.0 License.");
             gson.setExternalLink("https://github.com/google/gson");
 
             IconedTwoLineListItem xz = new IconedTwoLineListItem();
@@ -189,27 +189,27 @@ public class AboutPage extends StackPane {
 
             IconedTwoLineListItem fxgson = new IconedTwoLineListItem();
             fxgson.setTitle("fx-gson");
-            fxgson.setSubtitle("Copyright (c) 2016 Joffrey Bion.\nLicensed under the MIT License.");
+            fxgson.setSubtitle("Copyright © 2016 Joffrey Bion.\nLicensed under the MIT License.");
             fxgson.setExternalLink("https://github.com/joffrey-bion/fx-gson");
 
             IconedTwoLineListItem constantPoolScanner = new IconedTwoLineListItem();
             constantPoolScanner.setTitle("Constant Pool Scanner");
-            constantPoolScanner.setSubtitle("Copyright 1997-2010 Oracle and/or its affiliates.\nLicensed under the GPL 2 or the CDDL.");
+            constantPoolScanner.setSubtitle("Copyright © 1997-2010 Oracle and/or its affiliates.\nLicensed under the GPL 2 or the CDDL.");
             constantPoolScanner.setExternalLink("https://github.com/jenkinsci/constant-pool-scanner");
 
             IconedTwoLineListItem openNBT = new IconedTwoLineListItem();
             openNBT.setTitle("OpenNBT");
-            openNBT.setSubtitle("Copyright (C) 2013-2021 Steveice10.\nLicensed under the MIT License.");
+            openNBT.setSubtitle("Copyright © 2013-2021 Steveice10.\nLicensed under the MIT License.");
             openNBT.setExternalLink("https://github.com/Steveice10/OpenNBT");
 
             IconedTwoLineListItem jstun = new IconedTwoLineListItem();
             jstun.setTitle("JSTUN");
-            jstun.setSubtitle("Copyright (c) 2005 Thomas King <king@t-king.de>.\nLicensed under the Apache License 2.0.");
+            jstun.setSubtitle("Copyright © 2005 Thomas King <king@t-king.de>.\nLicensed under the Apache License 2.0.");
             jstun.setExternalLink("https://github.com/tking/JSTUN");
 
             IconedTwoLineListItem minecraftJFXSkin = new IconedTwoLineListItem();
             minecraftJFXSkin.setTitle("minecraft-jfx-skin");
-            minecraftJFXSkin.setSubtitle("Copyright (c) 2016 InfinityStudio.\nLicensed under the GPL 3.");
+            minecraftJFXSkin.setSubtitle("Copyright © 2016 InfinityStudio.\nLicensed under the GPL 3.");
             minecraftJFXSkin.setExternalLink("https://github.com/InfinityStudio/minecraft-jfx-skin");
 
             dep.getContent().setAll(javafx, jfoenix, gson, xz, fxgson, constantPoolScanner, openNBT, jstun, minecraftJFXSkin);
