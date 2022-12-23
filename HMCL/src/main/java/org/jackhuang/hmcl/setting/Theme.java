@@ -52,7 +52,7 @@ public class Theme {
 
     public static Theme getTheme() {
         Theme theme = config().getTheme();
-        return theme == null ? BLUE : theme;
+        return theme == null ? GREY : theme;
     }
 
     private final Color paint;
@@ -90,7 +90,7 @@ public class Theme {
 
         String fontFamily = System.getProperty("hmcl.font.override", overrideFontFamily);
 
-        if (fontFamily != null || !this.color.equalsIgnoreCase(BLUE.color)) {
+        if (fontFamily != null || !this.color.equalsIgnoreCase(GREY.color)) {
             Color textFill = getForegroundColor();
             try {
                 File temp = File.createTempFile("hmcl", ".css");
@@ -131,8 +131,8 @@ public class Theme {
         else {
             String color = null;
             switch (name.toLowerCase(Locale.ROOT)) {
-                case "blue":
-                    return Optional.of(BLUE);
+                case "grey":
+                    return Optional.of(GREY);
                 case "darker_blue":
                     color = "#283593";
                     break;
@@ -148,8 +148,8 @@ public class Theme {
                 case "red":
                     color = "#F44336";
                     break;
-                case "grey":
-                    color = "#616161";
+                case "bule":
+                    color = "#3d6da3";
             }
             if (color != null)
                 return Optional.of(new Theme(name, color));

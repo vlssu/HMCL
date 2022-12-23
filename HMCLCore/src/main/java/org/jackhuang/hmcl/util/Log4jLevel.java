@@ -32,7 +32,7 @@ public enum Log4jLevel {
     WARN(3, Color.web("#FFEECC")),
     INFO(4, Color.web("#FBFBFB")),
     DEBUG(5, Color.web("#EEE9E0")),
-    TRACE(6, Color.BLUE),
+    TRACE(6, Color.GREY),
     ALL(2147483647, Color.BLACK);
 
     private final int level;
